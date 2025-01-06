@@ -1,3 +1,7 @@
+// Import necessary THREE.js libraries
+import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+
 // Configuração básica da cena
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -5,6 +9,13 @@ const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
 // Adicionando luzes
 const ambientLight = new THREE.AmbientLight(0x404040); // Luz ambiente
@@ -21,7 +32,7 @@ function onLoadError(error) {
 
 // Função para carregar o modelo .obj
 function loadModel() {
-  const loader = new THREE.OBJLoader();
+  const loader = new OBJLoader();
   loader.load(
     './assets/avatar.obj',
     (object) => {
@@ -31,7 +42,11 @@ function loadModel() {
       object.scale.set(0.5, 0.5, 0.5); // Ajusta o tamanho do modelo
     },
     (xhr) => {
-      console.log(`Carregando: ${(xhr.loaded / xhr.total) * 100}%`);
+      if (xhr.total > 0) {
+        console.log(`Carregando: ${(xhr.loaded / xhr.total) * 100}%`);
+      } else {
+        console.log(`Carregando: ${xhr.loaded} bytes`);
+      }
     },
     onLoadError
   );
