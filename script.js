@@ -14,24 +14,33 @@ const pointLight = new THREE.PointLight(0xffffff, 1, 100);
 pointLight.position.set(10, 10, 10);
 scene.add(pointLight);
 
-// Carregando o modelo .obj
-const loader = new THREE.OBJLoader();
-loader.load(
-  './assets/avatar.obj', // Caminho para o arquivo .obj
-  (object) => {
-    scene.add(object);
-    object.position.set(0, -1, 0); // Ajusta a posição do modelo
-    object.scale.set(0.5, 0.5, 0.5); // Ajusta o tamanho do modelo
-  },
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + '% carregado');
-  },
-  (error) => {
-    console.error('Erro ao carregar o modelo:', error);
-  }
-);
+// Função para checar erros de carregamento
+function onLoadError(error) {
+  console.error('Erro ao carregar o modelo:', error);
+}
 
-// Posicionando a câmera
+// Função para carregar o modelo .obj
+function loadModel() {
+  const loader = new THREE.OBJLoader();
+  loader.load(
+    './assets/avatar.obj',
+    (object) => {
+      console.log('Modelo carregado com sucesso!');
+      scene.add(object);
+      object.position.set(0, -1, 0); // Ajusta a posição do modelo
+      object.scale.set(0.5, 0.5, 0.5); // Ajusta o tamanho do modelo
+    },
+    (xhr) => {
+      console.log(`Carregando: ${(xhr.loaded / xhr.total) * 100}%`);
+    },
+    onLoadError
+  );
+}
+
+// Carrega o modelo
+loadModel();
+
+// Configuração da câmera
 camera.position.z = 5;
 
 // Função de animação
